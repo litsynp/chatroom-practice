@@ -1,27 +1,19 @@
 package com.litsynp.chatroompractice.domain.chat.domain
 
-import com.litsynp.chatroompractice.domain.chat.service.MessageService
-import org.springframework.web.socket.WebSocketSession
+import javax.persistence.Column
+import javax.persistence.Entity
+import javax.persistence.GeneratedValue
+import javax.persistence.GenerationType
+import javax.persistence.Id
 
+@Entity
 class ChatRoom(
-    val roomId: String
+    roomId: String
 ) {
-    private val sessions: MutableSet<WebSocketSession> = mutableSetOf()
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    var id: Long? = null
 
-    fun handleActions(session: WebSocketSession, message: ChatMessage, msgService: MessageService) {
-        if (message.type.equals(ChatMessageType.ENTER)) {
-            sessions.add(session)
-            message.message = message.sender + "님이 입장했습니다."
-        }
-        sendMessage<Any>(message, msgService)
-    }
-
-    private fun <T> sendMessage(message: T, messageService: MessageService) {
-        sessions.parallelStream().forEach { session: WebSocketSession? ->
-            messageService.sendMessage(
-                session!!,
-                message
-            )
-        }
-    }
+    @Column(nullable = false)
+    val roomId: String = roomId
 }

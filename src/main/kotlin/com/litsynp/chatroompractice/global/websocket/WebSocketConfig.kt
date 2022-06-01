@@ -1,24 +1,23 @@
 package com.litsynp.chatroompractice.global.websocket
 
 import org.springframework.context.annotation.Configuration
-import org.springframework.web.socket.config.annotation.EnableWebSocket
-import org.springframework.web.socket.config.annotation.WebSocketConfigurer
-import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
+import org.springframework.messaging.simp.config.MessageBrokerRegistry
+import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker
+import org.springframework.web.socket.config.annotation.StompEndpointRegistry
+import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer
 
 
 @Configuration
-@EnableWebSocket
-class WebSocketConfig(
-    webSocketHandler: MyWebSocketHandler
-) : WebSocketConfigurer {
-
-    private val webSocketHandler: MyWebSocketHandler
-
-    init {
-        this.webSocketHandler = webSocketHandler
+@EnableWebSocketMessageBroker
+class WebSocketConfig : WebSocketMessageBrokerConfigurer {
+    override fun registerStompEndpoints(registry: StompEndpointRegistry) {
+        registry.addEndpoint("/ws")
+            .setAllowedOriginPatterns("*")
+            .withSockJS()
     }
 
-    override fun registerWebSocketHandlers(registry: WebSocketHandlerRegistry) {
-        registry.addHandler(webSocketHandler, "/ws/chat").setAllowedOrigins("*")
+    override fun configureMessageBroker(registry: MessageBrokerRegistry) {
+        registry.enableSimpleBroker("/sub")
+        registry.setApplicationDestinationPrefixes("/pub")
     }
 }

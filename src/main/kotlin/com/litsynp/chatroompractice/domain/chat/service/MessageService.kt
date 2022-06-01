@@ -16,22 +16,22 @@ class MessageService {
     private val objectMapper: ObjectMapper = ObjectMapper().registerModule(KotlinModule())
     private val chatRooms: MutableMap<String, ChatRoom> = mutableMapOf()
 
-    fun findAllRooms(): List<ChatRoom> {
+    fun findAll(): List<ChatRoom> {
         return chatRooms.values.toList()
     }
 
-    fun findById(roomId: String): ChatRoom? {
-        return chatRooms[roomId]
+    fun findById(id: String): ChatRoom? {
+        return chatRooms[id]
     }
 
-    fun createRoom(name: String): ChatRoom {
-        val chatRoom = ChatRoom(roomId = name)
-        chatRooms[name] = chatRoom
-        return chatRoom
+    fun create(entity: ChatRoom): ChatRoom {
+        chatRooms[entity.roomId] = entity
+        return entity
     }
 
     fun <T> sendMessage(session: WebSocketSession, message: T) {
         try {
+            log.info("Trying sendMessage")
             session.sendMessage(TextMessage(objectMapper.writeValueAsString(message)))
         } catch (e: IOException) {
             log.error(e.message, e)
